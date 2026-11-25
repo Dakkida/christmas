@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星降る夜のサンタさん(※彼氏)への秘密の手紙</title>
+
+  <!-- OGP設定（LINEなどでURLを送ったときの見え方） -->
+  <meta property="og:title" content="✨ 星降る夜のサンタさん(※彼氏)への秘密の手紙" />
+  <meta property="og:description" content="メリークリスマス🎄 今年のサンタ(※彼氏)から、あなたへの特別な招待状が届いています。欲しいものをこっそり教えてね。" />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#091224" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Shippori Mincho, Zen Maru Gothic, Great Vibes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Shippori+Mincho:wght@500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <script>
+    // Tailwind カスタムテーマ（星降るミッドナイトネイビー × シャンパンゴールド × 温かなアイボリー）
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            midnight: {
+              950: '#050a16',
+              900: '#091224',
+              800: '#101f3d',
+              700: '#1a2f59',
+            },
+            champagne: {
+              100: '#fff9eb',
+              200: '#f9ebca',
+              300: '#f1d697',
+              400: '#e2bc6b',
+              500: '#c79b42',
+            },
+            crimson: {
+              600: '#b8293d',
+              700: '#931d2f',
+              800: '#6e1422',
+            },
+            ivory: '#fdfaf4',
+          },
+          fontFamily: {
+            mincho: ['"Shippori Mincho"', 'serif'],
+            maru: ['"Zen Maru Gothic"', 'sans-serif'],
+            script: ['"Great Vibes"', 'cursive'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* =========================================================
+       基本レイアウト・星空グラデーション背景
+    ========================================================== */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      background: radial-gradient(ellipse at 50% 0%, #192d57 0%, #0a1428 52%, #040812 100%);
+      color: #fdfaf4;
+      overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* 背景アニメーション用キャンバス（星・ボケ光・雪・流れ星・星屑） */
+    #night-sky-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* エレガントなガラスモーフィズムカード */
+    .glass-card {
+      background: linear-gradient(155deg, rgba(253, 250, 244, 0.08) 0%, rgba(12, 24, 48, 0.58) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 188, 107, 0.28);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 249, 235, 0.14);
+    }
+
+    /* 選択チップ・カード */
+    .wish-pill {
+      background: rgba(9, 18, 36, 0.55);
+      border: 1px solid rgba(226, 188, 107, 0.28);
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .wish-pill:hover {
+      border-color: rgba(241, 214, 151, 0.65);
+      background: rgba(26, 47, 89, 0.65);
+    }
+
+    .wish-pill.selected {
+      background: linear-gradient(135deg, rgba(226, 188, 107, 0.28) 0%, rgba(147, 29, 47, 0.55) 100%);
+      border-color: #f1d697;
+      box-shadow: 0 0 20px rgba(226, 188, 107, 0.28), inset 0 0 12px rgba(255, 249, 235, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .wish-pill .pill-check {
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.2s ease;
+    }
+
+    .wish-pill.selected .pill-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* =========================================================
+       オープニング封筒＆リボンが解けるアニメーション
+    ========================================================== */
+    #opening-curtain {
+      transition: opacity 0.85s ease, transform 0.85s ease, visibility 0.85s ease;
+    }
+
+    #opening-curtain.curtain-hidden {
+      opacity: 0;
+      transform: scale(1.04);
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    @keyframes softFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+
+    .envelope-float {
+      animation: softFloat 4s ease-in-out infinite;
+    }
+
+    .ribbon-left,
+    .ribbon-right,
+    .wax-seal-open {
+      transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+    }
+
+    .envelope-untied .ribbon-left {
+      transform: translateX(-45px) rotate(-18deg);
+      opacity: 0;
+    }
+
+    .envelope-untied .ribbon-right {
+      transform: translateX(45px) rotate(18deg);
+      opacity: 0;
+    }
+
+    .envelope-untied .wax-seal-open {
+      transform: scale(1.35);
+      opacity: 0;
+    }
+
+    /* シマー光沢付きゴールドボタン */
+    @keyframes shimmerSweep {
+      0% { transform: translateX(-120%) skewX(-20deg); }
+      100% { transform: translateX(220%) skewX(-20deg); }
+    }
+
+    .shimmer-btn {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #c79b42 0%, #e2bc6b 48%, #b88732 100%);
+      color: #091224;
+      box-shadow: 0 8px 28px rgba(226, 188, 107, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      transition: transform 0.2s ease, box-shadow 0.25s ease;
+    }
+
+    .shimmer-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+      animation: shimmerSweep 3.4s ease-in-out infinite;
+    }
+
+    .shimmer-btn:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 12px 34px rgba(226, 188, 107, 0.48);
+    }
+
+    .shimmer-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* =========================================================
+       月明かりメダリオン：サンタさん(※彼氏) リアクションアニメ
+    ========================================================== */
+    @keyframes gentleBreathe {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-2px); }
+    }
+
+    .santa-breathe {
+      animation: gentleBreathe 3.2s ease-in-out infinite;
+    }
+
+    /* 付けヒゲがちょっと傾く */
+    .santa-beard {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: 50px 67px;
+    }
+
+    .beard-tilted .santa-beard {
+      transform: rotate(9deg) translate(2px, 1px);
+    }
+
+    /* 照れチークの濃さ */
+    .santa-blush {
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      opacity: 0.45;
+    }
+
+    .blush-deep .santa-blush {
+      opacity: 0.92;
+      transform: scale(1.15);
+      transform-origin: center;
+    }
+
+    /* 目のキラキラ */
+    .eye-sparkles {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .eyes-sparkle .eye-sparkles {
+      opacity: 1;
+    }
+
+    /* 羽ペンメモアニメーション */
+    @keyframes quillWrite {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(2.5px, -2px) rotate(-10deg); }
+    }
+
+    .golden-quill {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      transform-origin: 82px 76px;
+    }
+
+    .is-writing .golden-quill {
+      opacity: 1;
+      animation: quillWrite 0.45s ease-in-out infinite;
+    }
+
+    /* 照れた時に浮かぶ小さな金色のハート */
+    @keyframes heartRise {
+      0% { transform: translateY(4px) scale(0.7); opacity: 0; }
+      40% { opacity: 0.95; }
+      100% { transform: translateY(-16px) scale(1.05); opacity: 0; }
+    }
+
+    .floating-hearts {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .show-hearts .floating-hearts {
+      opacity: 1;
+    }
+
+    .show-hearts .heart-1 {
+      animation: heartRise 1.6s ease-out infinite;
+    }
+
+    .show-hearts .heart-2 {
+      animation: heartRise 1.6s ease-out 0.55s infinite;
+    }
+
+    /* =========================================================
+       送信シネマティック演出：封筒に封蝋→夜空へ舞い上がり流れ星に
+    ========================================================== */
+    @keyframes foldIntoEnvelope {
+      0% { transform: translateY(-28px) scale(0.92); opacity: 0; }
+      35% { transform: translateY(0px) scale(1); opacity: 1; }
+      100% { transform: translateY(10px) scale(0.95); opacity: 0; }
+    }
+
+    @keyframes sealAppear {
+      0%, 40% { transform: scale(2.1); opacity: 0; }
+      65% { transform: scale(0.94); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes ascendToStar {
+      0%, 62% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+      82% { transform: translate(24px, -40px) scale(0.75) rotate(8deg); opacity: 0.95; }
+      100% { transform: translate(160px, -210px) scale(0.18) rotate(24deg); opacity: 0; }
+    }
+
+    @keyframes starStreak {
+      0%, 75% { opacity: 0; transform: translate(-20px, 20px) scaleX(0.2); }
+      88% { opacity: 1; transform: translate(60px, -90px) scaleX(1.2); }
+      100% { opacity: 0; transform: translate(190px, -230px) scaleX(0.4); }
+    }
+
+    .anim-letter-fold {
+      animation: foldIntoEnvelope 1.4s ease forwards;
+    }
+
+    .anim-wax-seal {
+      animation: sealAppear 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .anim-envelope-ascend {
+      animation: ascendToStar 2.65s cubic-bezier(0.35, 0.05, 0.25, 1) forwards;
+    }
+
+    .anim-star-streak {
+      animation: starStreak 2.65s ease-out forwards;
+    }
+
+    /* 画面フェードイン */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up {
+      animation: fadeUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* トースト通知 */
+    #toast {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-champagne-400/40 selection:text-ivory">
+  <!-- 満天の星空・ボケ光・雪・流れ星・タップ星屑キャンバス -->
+  <canvas id="night-sky-canvas" aria-hidden="true"></canvas>
+
+  <!-- Googleフォーム裏側送信用の隠しiframe（Safari / LINE内ブラウザ確実対応） -->
+  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" title="秘密の手紙送信フレーム"></iframe>
+
+  <!-- 右上固定：オルゴールBGM ON/OFFボタン -->
+  <button
+    id="bgm-toggle"
+    type="button"
+    aria-label="オルゴールBGMの切り替え"
+    class="fixed top-3.5 right-3.5 z-50 flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-midnight-950/75 backdrop-blur-md border border-champagne-400/45 text-champagne-200 text-xs font-medium shadow-lg hover:bg-midnight-800/85 active:scale-95 transition"
+  >
+    <span id="bgm-icon" class="text-sm leading-none">♪</span>
+    <span id="bgm-label">オルゴール OFF</span>
+  </button>
+
+  <!-- カスタムトースト通知（alertの代替） -->
+  <div
+    id="toast"
+    role="status"
+    aria-live="polite"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-midnight-950/95 border border-champagne-400/70 text-champagne-100 text-xs sm:text-sm shadow-2xl opacity-0 pointer-events-none translate-y-4 whitespace-nowrap"
+  >
+    通知
+  </div>
+
+  <!-- =========================================================
+       1. ロマンチックなオープニングカーテン（金のリボン付き封筒）
+  ========================================================== -->
+  <section
+    id="opening-curtain"
+    class="fixed inset-0 z-40 flex items-center justify-center p-5 bg-gradient-to-b from-midnight-950/92 via-midnight-900/90 to-midnight-950/95 backdrop-blur-sm"
+  >
+    <div class="w-full max-w-md glass-card rounded-3xl p-7 sm:p-9 text-center relative overflow-hidden">
+      <!-- 繊細な四隅のきらめき -->
+      <span class="absolute top-5 left-6 text-champagne-300/70 text-sm">✦</span>
+      <span class="absolute top-6 right-6 text-champagne-400/60 text-xs">✧</span>
+      <span class="absolute bottom-6 left-6 text-champagne-400/60 text-xs">✧</span>
+      <span class="absolute bottom-5 right-6 text-champagne-300/70 text-sm">✦</span>
+
+      <p class="font-script text-champagne-300 text-4xl sm:text-5xl tracking-wide mb-1">
+        For You
+      </p>
+      <p class="text-[11px] tracking-[0.28em] text-champagne-200/75 uppercase mb-7">
+        Merry Christmas
+      </p>
+
+      <!-- 優しく光る金リボン付き招待状封筒 -->
+      <div
+        id="opening-envelope"
+        role="button"
+        tabindex="0"
+        aria-label="手紙のリボンをほどく"
+        class="envelope-float relative mx-auto w-56 h-36 mb-7 cursor-pointer focus:outline-none"
+      >
+        <!-- 背後のシャンパンゴールドの柔らかな光 -->
+        <div class="absolute -inset-4 rounded-full bg-champagne-400/20 blur-2xl pointer-events-none"></div>
+
+        <svg viewBox="0 0 240 156" class="w-full h-full drop-shadow-2xl overflow-visible">
+          <!-- 封筒本体（アイボリー＆ゴールド枠） -->
+          <rect x="10" y="14" width="220" height="130" rx="14" fill="#fdfaf4" stroke="#e2bc6b" stroke-width="2.5" />
+          <!-- 封筒の折り目 -->
+          <path d="M12 18 L120 88 L228 18" fill="#f7efdc" stroke="#e2bc6b" stroke-width="2" />
+          <path d="M12 140 L94 74 M228 140 L146 74" stroke="#e2bc6b" stroke-width="1.4" opacity="0.6" />
+
+          <!-- 金のリボン（ほどける左右パーツ） -->
+          <g class="ribbon-left">
+            <rect x="10" y="72" width="110" height="12" fill="#e2bc6b" opacity="0.92" />
+            <path d="M120 78 C96 58, 72 64, 82 80 C90 92, 108 86, 120 78 Z" fill="#f1d697" stroke="#c79b42" stroke-width="1.5" />
+          </g>
+          <g class="ribbon-right">
+            <rect x="120" y="72" width="110" height="12" fill="#e2bc6b" opacity="0.92" />
+            <path d="M120 78 C144 58, 168 64, 158 80 C150 92, 132 86, 120 78 Z" fill="#f1d697" stroke="#c79b42" stroke-width="1.5" />
+          </g>
+
+          <!-- 中央の深紅シーリングワックス -->
+          <g class="wax-seal-open">
+            <circle cx="120" cy="78" r="22" fill="#931d2f" stroke="#f1d697" stroke-width="2" />
+            <circle cx="120" cy="78" r="17" fill="none" stroke="#f9ebca" stroke-width="1" stroke-dasharray="2 2" opacity="0.7" />
+            <text x="120" y="83" text-anchor="middle" font-size="14" fill="#fff9eb">♥</text>
+          </g>
+        </svg>
+      </div>
+
+      <h1 class="font-mincho text-xl sm:text-2xl font-semibold text-ivory leading-relaxed mb-3">
+        星降る夜のサンタさん<span class="text-champagne-300 text-base sm:text-lg">(※彼氏)</span>から<br />
+        秘密の手紙が届いています
+      </h1>
+      <p class="text-xs sm:text-sm text-ivory/75 leading-relaxed mb-7">
+        今年も一緒に迎えるクリスマス。<br />
+        あなたの欲しいもの、こっそり教えてください。
+      </p>
+
+      <button
+        id="open-letter-btn"
+        type="button"
+        class="shimmer-btn w-full py-3.5 px-6 rounded-full font-mincho font-bold text-base sm:text-lg tracking-wider"
+      >
+        手紙を開く ✨
+      </button>
+      <p class="mt-3 text-[11px] text-champagne-200/60">
+        ※タップすると優しいオルゴールが流れます（右上でいつでもOFF可）
+      </p>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       2. 送信シネマティック演出オーバーレイ（封蝋→流れ星へ）
+  ========================================================== -->
+  <div
+    id="sending-overlay"
+    class="fixed inset-0 z-50 hidden flex-col items-center justify-center p-6 bg-midnight-950/92 backdrop-blur-md overflow-hidden"
+  >
+    <div class="relative w-56 h-52 flex items-center justify-center mb-3">
+      <!-- 流れ星の光の尾 -->
+      <div
+        id="star-streak-el"
+        class="hidden absolute w-40 h-1 rounded-full bg-gradient-to-r from-transparent via-champagne-200 to-white shadow-[0_0_20px_#f1d697] -rotate-45"
+      ></div>
+
+      <!-- 夜空へ舞い上がる封筒グループ -->
+      <div id="sending-envelope-wrap" class="relative w-44 h-32">
+        <!-- 折りたたまれて中に入る手紙 -->
+        <div
+          id="folding-letter-el"
+          class="absolute left-5 right-5 -top-4 h-20 rounded-xl bg-ivory border border-champagne-400 shadow-lg flex flex-col items-center justify-center gap-1.5 px-4 z-10"
+        >
+          <span class="w-full h-1 rounded-full bg-champagne-400/60"></span>
+          <span class="w-3/4 h-1 rounded-full bg-midnight-800/25"></span>
+          <span class="text-xs text-crimson-700">♥</span>
+        </div>
+
+        <!-- クリーム＆ゴールドの封筒 -->
+        <svg viewBox="0 0 180 120" class="relative z-20 w-full h-full drop-shadow-2xl">
+          <rect x="4" y="14" width="172" height="100" rx="12" fill="#fdfaf4" stroke="#e2bc6b" stroke-width="2.5" />
+          <path d="M6 17 L90 70 L174 17" fill="#f5e9ce" stroke="#e2bc6b" stroke-width="2" />
+          <path d="M6 112 L72 58 M174 112 L108 58" stroke="#e2bc6b" stroke-width="1.3" opacity="0.65" />
+
+          <!-- 深紅シーリングワックス（ハート＆さりげない「彼氏」） -->
+          <g id="wax-seal-el" style="transform-origin: 90px 66px;">
+            <circle cx="90" cy="66" r="20" fill="#931d2f" stroke="#f1d697" stroke-width="2" />
+            <text x="90" y="65" text-anchor="middle" font-size="11" fill="#fff9eb">♥</text>
+            <text x="90" y="77" text-anchor="middle" font-size="8" font-weight="700" fill="#f9ebca">彼氏</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <p class="font-mincho text-lg sm:text-xl text-champagne-200 tracking-wider mb-1.5">
+      星降る夜空へ手紙を届けています…
+    </p>
+    <p class="text-xs text-ivory/65">
+      サンタさん(※彼氏)へ、秘密のまま送信中 ✨
+    </p>
+  </div>
+
+  <!-- =========================================================
+       3. 常駐・月明かりメダリオン「サンタさん(※彼氏)」ヘッダー
+  ========================================================== -->
+  <header
+    id="santa-sticky-header"
+    class="hidden sticky top-0 z-30 bg-midnight-950/75 backdrop-blur-lg border-b border-champagne-400/25 shadow-lg"
+  >
+    <div class="max-w-xl mx-auto px-3.5 py-2.5 pr-32 sm:pr-36 flex items-center gap-3">
+      <!-- タップできる月明かりメダリオンのサンタ(※彼氏) -->
+      <button
+        id="santa-medallion-btn"
+        type="button"
+        aria-label="サンタさん(※彼氏)をタップして話しかける"
+        class="relative shrink-0 w-[68px] h-[68px] sm:w-[74px] sm:h-[74px] rounded-full bg-gradient-to-b from-midnight-700 to-midnight-900 border-2 border-champagne-300/80 shadow-[0_0_22px_rgba(226,188,107,0.35)] flex items-center justify-center focus:outline-none active:scale-95 transition overflow-visible"
+      >
+        <!-- 月明かりの淡い光輪 -->
+        <span class="absolute -inset-1 rounded-full bg-champagne-300/15 blur-md pointer-events-none"></span>
+
+        <svg id="santa-svg" viewBox="0 0 100 100" class="w-16 h-16 sm:w-[70px] sm:h-[70px] santa-breathe overflow-visible">
+          <!-- 背景の小さな三日月と星 -->
+          <circle cx="20" cy="22" r="2" fill="#f9ebca" opacity="0.8" />
+          <circle cx="82" cy="18" r="1.5" fill="#f9ebca" opacity="0.7" />
+
+          <!-- サンタ帽（品のある深紅） -->
+          <path d="M21 37 C24 12, 68 10, 82 31 Z" fill="#931d2f" stroke="#2c1a1d" stroke-width="2" stroke-linejoin="round" />
+          <circle cx="83" cy="32" r="6" fill="#fdfaf4" stroke="#e2bc6b" stroke-width="1.5" />
+
+          <!-- 耳 -->
+          <circle cx="23" cy="54" r="5.5" fill="#fce1c8" stroke="#c89a78" stroke-width="1.5" />
+          <circle cx="77" cy="54" r="5.5" fill="#fce1c8" stroke="#c89a78" stroke-width="1.5" />
+
+          <!-- やさしい顔 -->
+          <circle cx="50" cy="54" r="25" fill="#fce1c8" stroke="#d4a787" stroke-width="1.5" />
+
+          <!-- 帽子のふわふわ白いフチ -->
+          <rect x="22" y="30" width="56" height="10" rx="5" fill="#fdfaf4" stroke="#e2bc6b" stroke-width="1.5" />
+
+          <!-- 優しい目 -->
+          <circle cx="40" cy="49" r="3" fill="#2c2438" />
+          <circle cx="60" cy="49" r="3" fill="#2c2438" />
+          <!-- 普段の小さな瞳ハイライト -->
+          <circle cx="39" cy="48" r="1" fill="#ffffff" />
+          <circle cx="59" cy="48" r="1" fill="#ffffff" />
+
+          <!-- 入力中のキラキラ瞳オーバーレイ -->
+          <g class="eye-sparkles">
+            <text x="35" y="51" font-size="9" fill="#f9ebca">✦</text>
+            <text x="55" y="51" font-size="9" fill="#f9ebca">✦</text>
+          </g>
+
+          <!-- ほんのり赤いほっぺ（照れると濃くなる） -->
+          <ellipse class="santa-blush" cx="33" cy="57" rx="5.5" ry="3.2" fill="#f28b9c" />
+          <ellipse class="santa-blush" cx="67" cy="57" rx="5.5" ry="3.2" fill="#f28b9c" />
+
+          <!-- ふわふわ付けヒゲ（耳の後ろにうっすら細いゴム紐が見える！） -->
+          <g class="santa-beard">
+            <!-- さりげない細いゴム紐 -->
+            <line x1="23.5" y1="54" x2="31" y2="62" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="2 1.2" opacity="0.85" />
+            <line x1="76.5" y1="54" x2="69" y2="62" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="2 1.2" opacity="0.85" />
+            <!-- ふわふわ白いヒゲ -->
+            <path d="M29 61 Q38 56 50 60 Q62 56 71 61 Q71 81 50 85 Q29 81 29 61 Z" fill="#fdfaf4" stroke="#e2bc6b" stroke-width="1.4" />
+            <!-- やさしい笑顔の口 -->
+            <path d="M44 65 Q50 70 56 65" fill="none" stroke="#7c4d4d" stroke-width="1.8" stroke-linecap="round" />
+          </g>
+
+          <!-- ほしいもの入力中に出る小さな金色の羽ペン＆メモ -->
+          <g class="golden-quill">
+            <rect x="69" y="67" width="18" height="22" rx="3" fill="#fff9eb" stroke="#e2bc6b" stroke-width="1.5" transform="rotate(8 78 78)" />
+            <line x1="73" y1="73" x2="83" y2="75" stroke="#c79b42" stroke-width="1.2" />
+            <line x1="72" y1="78" x2="82" y2="80" stroke="#c79b42" stroke-width="1.2" />
+            <!-- 金の羽ペン -->
+            <path d="M89 58 C84 62, 81 69, 78 77 C84 74, 88 67, 89 58 Z" fill="#f1d697" stroke="#c79b42" stroke-width="1.2" />
+          </g>
+
+          <!-- メッセージ入力中に浮かぶ小さな金色のハート -->
+          <g class="floating-hearts">
+            <text class="heart-1" x="12" y="34" font-size="10" fill="#f1d697">♥</text>
+            <text class="heart-2" x="80" y="26" font-size="9" fill="#f9ebca">♥</text>
+          </g>
+        </svg>
+      </button>
+
+      <!-- やさしい吹き出し -->
+      <div class="relative flex-1 bg-midnight-900/80 border border-champagne-400/35 rounded-2xl px-3.5 py-2.5 shadow-md">
+        <div class="absolute top-1/2 -left-1.5 -translate-y-1/2 w-2.5 h-2.5 bg-midnight-900 border-l border-b border-champagne-400/35 rotate-45"></div>
+        <p class="text-[10px] tracking-wider text-champagne-300/90 font-medium mb-0.5">
+          サンタさん（※彼氏）
+        </p>
+        <p id="santa-speech" class="text-xs sm:text-[13px] text-ivory/95 leading-snug">
+          メリークリスマス🎄 今年のサンタ(※彼氏)です。君の欲しいもの、こっそり教えて？
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       4. メイン手紙フォーム
+  ========================================================== -->
+  <main id="main-content" class="relative z-10 hidden max-w-xl mx-auto px-4 sm:px-6 pt-7 pb-20">
+    <!-- タイトル導入 -->
+    <div class="text-center mb-7 fade-up">
+      <div class="flex items-center justify-center gap-3 mb-2 text-champagne-300/80">
+        <span class="h-px w-10 bg-gradient-to-r from-transparent to-champagne-400/70"></span>
+        <span class="text-xs">✦</span>
+        <span class="h-px w-10 bg-gradient-to-l from-transparent to-champagne-400/70"></span>
+      </div>
+      <h1 class="font-mincho text-2xl sm:text-3xl font-semibold text-champagne-100 tracking-wide mb-1.5">
+        星降る夜の秘密の手紙
+      </h1>
+      <p class="text-xs sm:text-sm text-ivory/70">
+        LINEには残らず、サンタさん(※彼氏)だけにそっと届きます
+      </p>
+    </div>
+
+    <!-- Googleフォーム直結フォーム（隠しiframe方式） -->
+    <form
+      id="wishlist-form"
+      method="POST"
+      action="https://docs.google.com/forms/d/e/1FAIpQLSd0YQZqlj9UL5IXWW2ezFDk0raZuWgUhQwIbkf48P_SHjI76A/formResponse"
+      target="hidden_iframe"
+      class="space-y-6 fade-up"
+      novalidate
+    >
+      <!-- Googleフォーム送信用の5つの隠しフィールド（ID厳密一致） -->
+      <input type="hidden" id="hidden-category" name="entry.2082044255" value="" />
+      <input type="hidden" id="hidden-item" name="entry.73645399" value="" />
+      <input type="hidden" id="hidden-details" name="entry.528193620" value="" />
+      <input type="hidden" id="hidden-date" name="entry.1697303848" value="" />
+      <input type="hidden" id="hidden-message" name="entry.979252749" value="" />
+
+      <!-- Step 1: ジャンル (entry.2082044255) -->
+      <section class="glass-card rounded-3xl p-5 sm:p-6">
+        <div class="flex items-start justify-between gap-2 mb-4">
+          <div>
+            <span class="block text-[10px] tracking-[0.22em] text-champagne-400 uppercase mb-1">Step 01</span>
+            <h2 class="font-mincho text-base sm:text-lg font-semibold text-ivory">
+              気になるプレゼントのジャンルは？
+            </h2>
+          </div>
+          <span class="shrink-0 text-[10px] px-2.5 py-1 rounded-full bg-champagne-400/15 border border-champagne-400/35 text-champagne-200">
+            複数OK
+          </span>
+        </div>
+
+        <div id="category-grid" class="grid grid-cols-2 gap-2.5 sm:gap-3">
+          <!-- JSで生成 -->
+        </div>
+      </section>
+
+      <!-- Step 2: ほしいもの・ブランド・URL (entry.73645399) -->
+      <section class="glass-card rounded-3xl p-5 sm:p-6">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <div>
+            <span class="block text-[10px] tracking-[0.22em] text-champagne-400 uppercase mb-1">Step 02</span>
+            <h2 class="font-mincho text-base sm:text-lg font-semibold text-ivory">
+              ほしいもの・ブランド・URL
+            </h2>
+          </div>
+          <span class="shrink-0 text-[10px] px-2.5 py-1 rounded-full bg-ivory/10 text-ivory/70">任意</span>
+        </div>
+        <p class="text-xs text-ivory/65 mb-3.5 leading-relaxed">
+          気になっているアイテムやショップのURLなど、遠慮なく書いてね。
+        </p>
+        <textarea
+          id="input-item"
+          rows="4"
+          placeholder="例：〇〇のネックレス、気になってる新作リップ、商品ページのURL（https://...）など"
+          class="w-full rounded-2xl bg-midnight-950/65 border border-champagne-400/30 px-4 py-3 text-sm sm:text-[15px] text-ivory placeholder:text-ivory/35 focus:outline-none focus:border-champagne-300 focus:ring-2 focus:ring-champagne-400/25 transition"
+        ></textarea>
+      </section>
+
+      <!-- Step 3: カラーやサイズ、こだわりなど (entry.528193620) -->
+      <section class="glass-card rounded-3xl p-5 sm:p-6">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <div>
+            <span class="block text-[10px] tracking-[0.22em] text-champagne-400 uppercase mb-1">Step 03</span>
+            <h2 class="font-mincho text-base sm:text-lg font-semibold text-ivory">
+              カラーやサイズ、こだわりなど
+            </h2>
+          </div>
+          <span class="shrink-0 text-[10px] px-2.5 py-1 rounded-full bg-ivory/10 text-ivory/70">任意</span>
+        </div>
+        <p class="text-xs text-ivory/65 mb-3.5 leading-relaxed">
+          好みの色味やサイズ感、ちょっとしたヒントがあればぜひ。
+        </p>
+        <input
+          id="input-details"
+          type="text"
+          placeholder="例：ゴールド系が好き、サイズはS、色番は03 など"
+          class="w-full rounded-2xl bg-midnight-950/65 border border-champagne-400/30 px-4 py-3 text-sm sm:text-[15px] text-ivory placeholder:text-ivory/35 focus:outline-none focus:border-champagne-300 focus:ring-2 focus:ring-champagne-400/25 transition"
+        />
+      </section>
+
+      <!-- Step 4: 当日の理想の過ごし方 (entry.1697303848) -->
+      <section class="glass-card rounded-3xl p-5 sm:p-6">
+        <div class="flex items-start justify-between gap-2 mb-4">
+          <div>
+            <span class="block text-[10px] tracking-[0.22em] text-champagne-400 uppercase mb-1">Step 04</span>
+            <h2 class="font-mincho text-base sm:text-lg font-semibold text-ivory">
+              当日の理想の過ごし方は？
+            </h2>
+          </div>
+          <span class="shrink-0 text-[10px] px-2.5 py-1 rounded-full bg-champagne-400/15 border border-champagne-400/35 text-champagne-200">
+            選択＋自由記入
+          </span>
+        </div>
+
+        <div id="date-grid" class="grid grid-cols-2 gap-2.5 sm:gap-3 mb-3.5">
+          <!-- JSで生成 -->
+        </div>
+
+        <input
+          id="input-date-free"
+          type="text"
+          placeholder="行きたい場所や食べたいものがあれば自由に書いてね 🥂"
+          class="w-full rounded-2xl bg-midnight-950/65 border border-champagne-400/30 px-4 py-3 text-sm text-ivory placeholder:text-ivory/35 focus:outline-none focus:border-champagne-300 focus:ring-2 focus:ring-champagne-400/25 transition"
+        />
+      </section>
+
+      <!-- Step 5: サンタさん(※彼氏)へひとこと (entry.979252749) -->
+      <section class="glass-card rounded-3xl p-5 sm:p-6">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <div>
+            <span class="block text-[10px] tracking-[0.22em] text-champagne-400 uppercase mb-1">Step 05</span>
+            <h2 class="font-mincho text-base sm:text-lg font-semibold text-ivory">
+              サンタさん(※彼氏)へひとこと
+            </h2>
+          </div>
+          <span class="shrink-0 text-[10px] px-2.5 py-1 rounded-full bg-ivory/10 text-ivory/70">任意</span>
+        </div>
+        <p class="text-xs text-ivory/65 mb-3.5 leading-relaxed">
+          伝えたいことや楽しみにしてること、何でも書いてね。
+        </p>
+        <textarea
+          id="input-message"
+          rows="3"
+          placeholder="例：いつもありがとう！今年のクリスマスも楽しみにしてるね🎄"
+          class="w-full rounded-2xl bg-midnight-950/65 border border-champagne-400/30 px-4 py-3 text-sm sm:text-[15px] text-ivory placeholder:text-ivory/35 focus:outline-none focus:border-champagne-300 focus:ring-2 focus:ring-champagne-400/25 transition"
+        ></textarea>
+      </section>
+
+      <!-- 送信ボタン -->
+      <div class="pt-2 text-center">
+        <button
+          id="submit-btn"
+          type="submit"
+          class="shimmer-btn w-full sm:w-auto sm:min-w-[300px] py-4 px-8 rounded-full font-mincho font-bold text-base sm:text-lg tracking-wider"
+        >
+          星空のサンタさんへ届ける ✨
+        </button>
+      </div>
+    </form>
+
+    <!-- =========================================================
+         5. 送信完了画面（ロマンチック＋可愛い一言）
+    ========================================================== -->
+    <section id="complete-section" class="hidden fade-up">
+      <div class="glass-card rounded-3xl p-7 sm:p-9 text-center relative overflow-hidden">
+        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-champagne-300 to-transparent"></div>
+
+        <!-- 封蝋モチーフの完了エンブレム -->
+        <div class="relative mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-crimson-600 to-crimson-800 border-2 border-champagne-300/80 shadow-[0_0_28px_rgba(226,188,107,0.35)] flex flex-col items-center justify-center mb-5">
+          <span class="text-xl text-ivory leading-none">♥</span>
+          <span class="text-[10px] text-champagne-200 tracking-widest mt-0.5">For You</span>
+        </div>
+
+        <p class="font-script text-3xl sm:text-4xl text-champagne-300 mb-1.5">
+          Wish Received
+        </p>
+        <h2 class="font-mincho text-xl sm:text-2xl font-semibold text-ivory leading-relaxed mb-4">
+          秘密のお願い、<br class="sm:hidden" />確かに受け取りました
+        </h2>
+
+        <p class="text-sm sm:text-[15px] text-ivory/85 leading-8 mb-6">
+          サンタさん(※彼氏)が、誰にもバレないように<br class="hidden sm:inline" />
+          こっそり準備を始めます。<br />
+          <span class="text-champagne-200 font-medium">今年のクリスマス、楽しみにしててね。</span>
+        </p>
+
+        <!-- 送ったお願いの控えバッジ -->
+        <div class="rounded-2xl bg-midnight-950/60 border border-champagne-400/25 p-4 sm:p-5 text-left space-y-2.5 text-xs sm:text-sm mb-6">
+          <div class="flex items-center justify-between border-b border-champagne-400/20 pb-2 text-[11px] text-champagne-300">
+            <span>✦ 預かった秘密のお願い</span>
+            <span id="sent-timestamp">--</span>
+          </div>
+          <div>
+            <span class="text-champagne-300/80 text-[11px] block">ジャンル</span>
+            <span id="summary-category" class="text-ivory/95"></span>
+          </div>
+          <div>
+            <span class="text-champagne-300/80 text-[11px] block">ほしいもの・ヒント</span>
+            <span id="summary-item" class="text-ivory/95 break-all whitespace-pre-wrap"></span>
+          </div>
+          <div>
+            <span class="text-champagne-300/80 text-[11px] block">当日の過ごし方</span>
+            <span id="summary-date" class="text-ivory/95"></span>
+          </div>
+        </div>
+
+        <!-- くすっと笑える控えめな注釈 -->
+        <p class="text-[11px] sm:text-xs text-champagne-200/75 bg-midnight-950/45 inline-block px-4 py-2 rounded-full border border-champagne-400/20">
+          ※現在、サンタ(※彼氏)が裏側でニヤニヤしながら確認中です
+        </p>
+      </div>
+    </section>
+
+    <!-- フッター -->
+    <footer class="mt-12 text-center text-[11px] text-ivory/40">
+      <p class="font-script text-xl text-champagne-300/55 mb-0.5">Merry Christmas</p>
+      <p>With all my love, from your Santa 🎄</p>
+    </footer>
+  </main>
+
+  <script>
+    /**
+     * =========================================================
+     * 1. データ定義（選択肢 ＆ サンタ(※彼氏)のセリフ）
+     * =========================================================
+     */
+    const CATEGORY_OPTIONS = [
+      {
+        emoji: '💍',
+        label: 'アクセサリー・小物',
+        speech: '君に似合うの、絶対に見つけてみせるね✨',
+      },
+      {
+        emoji: '💄',
+        label: 'コスメ・美容',
+        speech: '色番とか間違えないように全力で予習します…！(メモ)',
+      },
+      {
+        emoji: '👜',
+        label: 'ファッション・バッグ',
+        speech: 'センス問われるやつだ…！でも任せて✨',
+      },
+      {
+        emoji: '🥂',
+        label: 'グルメ・体験・デート',
+        speech: '二人でとびきり素敵な夜にしようね🥂',
+      },
+      {
+        emoji: '✨',
+        label: 'おまかせ・サプライズ',
+        speech: 'サンタ(※彼氏)の腕の見せ所だね。期待してて！',
+      },
+      {
+        emoji: '🎁',
+        label: 'その他・ひみつ',
+        speech: 'おっ、なんだろう？下の欄でこっそり教えてね🎅',
+      },
+    ];
+
+    const DATE_OPTIONS = [
+      {
+        emoji: '🏠',
+        label: 'おうちでまったり',
+        speech: 'おうちクリスマス最高だね。ケーキとチキン用意しとくよ🍰',
+      },
+      {
+        emoji: '🍷',
+        label: 'ちょっといいディナー',
+        speech: '素敵なディナーにしようね。こっそりお店探しておくよ🍷',
+      },
+      {
+        emoji: '🌃',
+        label: 'イルミネーションデート',
+        speech: 'イルミネーション見に行こうね。手、冷たくならないように温めるよ❄️',
+      },
+      {
+        emoji: '✨',
+        label: 'おまかせ',
+        speech: 'デートもおまかせ？よし、最高の夜を計画するね✨',
+      },
+    ];
+
+    const SANTA_TAP_LINES = [
+      'あ、付けヒゲずれてた？…見なかったことにしてね',
+      '君が笑ってくれるなら、サンタ業も悪くないなって',
+      '一応、トナカイ(徒歩)で向かう予定だよ🦌',
+      'えへへ、くすぐったいよ',
+      '星空の下だと、ちょっとだけカッコつけたくなるんだよね',
+    ];
+
+    const selectedCategories = new Set();
+    const selectedDates = new Set();
+    let tapLineIdx = 0;
+
+    /**
+     * =========================================================
+     * 2. トースト通知（alert不使用）
+     * =========================================================
+     */
+    let toastTimer = null;
+    function showToast(text) {
+      const el = document.getElementById('toast');
+      el.textContent = text;
+      el.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+      el.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.remove('opacity-100', 'translate-y-0');
+        el.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+      }, 2700);
+    }
+
+    /**
+     * =========================================================
+     * 3. Web Audio API：繊細なオルゴールBGM ＆ 優しい効果音
+     * =========================================================
+     */
+    let audioCtx = null;
+    let isBgmOn = false;
+    let bgmTimer = null;
+    let melodyIdx = 0;
+
+    // 温かく澄んだオルゴール音域の周波数
+    const NOTE = {
+      C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99,
+      A5: 880.0, B5: 987.77, C6: 1046.5, D6: 1174.66, E6: 1318.51, F6: 1396.91,
+    };
+
+    // ゆったりロマンチックな「きよしこの夜 (Silent Night)」
+    const SILENT_NIGHT_MELODY = [
+      [NOTE.G5, 0.65], [NOTE.A5, 0.3], [NOTE.G5, 0.48], [NOTE.E5, 1.3],
+      [NOTE.G5, 0.65], [NOTE.A5, 0.3], [NOTE.G5, 0.48], [NOTE.E5, 1.3],
+      [NOTE.D6, 0.9], [NOTE.D6, 0.45], [NOTE.B5, 1.3],
+      [NOTE.C6, 0.9], [NOTE.C6, 0.45], [NOTE.G5, 1.3],
+      [NOTE.A5, 0.9], [NOTE.A5, 0.45], [NOTE.C6, 0.65], [NOTE.B5, 0.3], [NOTE.A5, 0.48],
+      [NOTE.G5, 0.65], [NOTE.A5, 0.3], [NOTE.G5, 0.48], [NOTE.E5, 1.3],
+      [NOTE.D6, 0.9], [NOTE.D6, 0.45], [NOTE.F6, 0.65], [NOTE.D6, 0.3], [NOTE.B5, 0.48],
+      [NOTE.C6, 1.35], [NOTE.E6, 1.35],
+      [NOTE.C6, 0.6], [NOTE.G5, 0.32], [NOTE.E5, 0.48], [NOTE.G5, 0.6], [NOTE.F5, 0.32], [NOTE.D5, 0.48],
+      [NOTE.C5, 1.8], [0, 0.7],
+    ];
+
+    function initAudioContext() {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!audioCtx && Ctx) audioCtx = new Ctx();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    // チェレスタ／オルゴール風の柔らかな鐘の倍音シンセ
+    function playCelestaNote(freq, duration, volume = 0.055) {
+      if (!audioCtx || freq <= 0) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        const gain2 = audioCtx.createGain();
+
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(freq, now);
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(freq * 2, now);
+
+        const release = Math.max(duration * 2.1, 1.25);
+
+        gain1.gain.setValueAtTime(0.0001, now);
+        gain1.gain.linearRampToValueAtTime(volume, now + 0.018);
+        gain1.gain.exponentialRampToValueAtTime(0.0001, now + release);
+
+        gain2.gain.setValueAtTime(0.0001, now);
+        gain2.gain.linearRampToValueAtTime(volume * 0.22, now + 0.01);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+        osc1.connect(gain1);
+        osc2.connect(gain2);
+        gain1.connect(audioCtx.destination);
+        gain2.connect(audioCtx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + release + 0.05);
+        osc2.stop(now + 0.5);
+      } catch (e) {
+        // 再生不可時は安全に無視
+      }
+    }
+
+    // 優しいきらめきチャイム（操作時）
+    function playSparkleChime(high = false) {
+      if (!isBgmOn) return;
+      initAudioContext();
+      const base = high ? 1174.66 : 987.77;
+      playCelestaNote(base, 0.35, 0.04);
+      setTimeout(() => playCelestaNote(base * 1.25, 0.45, 0.03), 70);
+    }
+
+    // 送信時の温かな魔法のアルペジオ
+    function playMagicalSwell() {
+      if (!isBgmOn) return;
+      initAudioContext();
+      const chord = [523.25, 659.25, 783.99, 987.77, 1046.5, 1318.51];
+      chord.forEach((f, idx) => {
+        setTimeout(() => playCelestaNote(f, 0.9, 0.048), idx * 120);
+      });
+    }
+
+    function stepMelody() {
+      if (!isBgmOn) return;
+      const [freq, dur] = SILENT_NIGHT_MELODY[melodyIdx];
+      playCelestaNote(freq, dur, 0.052);
+      melodyIdx = (melodyIdx + 1) % SILENT_NIGHT_MELODY.length;
+      bgmTimer = setTimeout(stepMelody, dur * 1000);
+    }
+
+    function setBgmState(enable, silentToast = false) {
+      const label = document.getElementById('bgm-label');
+      const icon = document.getElementById('bgm-icon');
+
+      if (enable) {
+        try {
+          initAudioContext();
+          if (!isBgmOn) {
+            isBgmOn = true;
+            icon.textContent = '🎵';
+            label.textContent = 'オルゴール ON';
+            stepMelody();
+            if (!silentToast) showToast('オルゴールを再生しました ♪');
+          }
+        } catch (err) {
+          if (!silentToast) showToast('この環境では音声を再生できませんでした');
+        }
+      } else {
+        isBgmOn = false;
+        clearTimeout(bgmTimer);
+        icon.textContent = '♪';
+        label.textContent = 'オルゴール OFF';
+      }
+    }
+
+    /**
+     * =========================================================
+     * 4. 星空・ボケ光・雪・流れ星・タップ星屑 Canvas
+     * =========================================================
+     */
+    const skyCanvas = document.getElementById('night-sky-canvas');
+    const skyCtx = skyCanvas.getContext('2d');
+
+    let stars = [];
+    let bokehOrbs = [];
+    let snowflakes = [];
+    let shootingStars = [];
+    let stardustBursts = [];
+
+    function resizeSkyCanvas() {
+      skyCanvas.width = window.innerWidth;
+      skyCanvas.height = window.innerHeight;
+      initSkyElements();
+    }
+
+    function initSkyElements() {
+      const w = skyCanvas.width;
+      const h = skyCanvas.height;
+
+      // 瞬く星々
+      const starCount = Math.min(Math.floor((w * h) / 7000), 110);
+      stars = Array.from({ length: starCount }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h * 0.78,
+        r: Math.random() * 1.4 + 0.4,
+        phase: Math.random() * Math.PI * 2,
+        speed: Math.random() * 0.025 + 0.008,
+      }));
+
+      // シャンパンゴールド＆暖色ホワイトの柔らかなボケ光
+      bokehOrbs = Array.from({ length: 16 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 34 + 16,
+        vx: (Math.random() - 0.5) * 0.14,
+        vy: -(Math.random() * 0.18 + 0.05),
+        phase: Math.random() * Math.PI * 2,
+        isGold: Math.random() > 0.35,
+      }));
+
+      // 奥行きのある穏やかな雪
+      const snowCount = Math.min(Math.floor(w / 10), 75);
+      snowflakes = Array.from({ length: snowCount }, () => {
+        const depth = Math.random(); // 0: 遠く, 1: 手前
+        return {
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: 0.9 + depth * 2.1,
+          vy: 0.25 + depth * 0.65,
+          swayAmp: 0.15 + depth * 0.45,
+          phase: Math.random() * Math.PI * 2,
+          opacity: 0.22 + depth * 0.52,
+        };
+      });
+    }
+
+    // 流れ星をたまに生成
+    function spawnShootingStar() {
+      if (shootingStars.length > 2) return;
+      const startX = Math.random() * skyCanvas.width * 0.75 + skyCanvas.width * 0.15;
+      const startY = Math.random() * skyCanvas.height * 0.35;
+      shootingStars.push({
+        x: startX,
+        y: startY,
+        vx: -(Math.random() * 7 + 8),
+        vy: Math.random() * 3.5 + 3.5,
+        len: Math.random() * 65 + 55,
+        life: 1.0,
+      });
+    }
+
+    // タップした場所に金色の星屑をふわっと散らす
+    function spawnStardust(x, y, count = 18) {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 2.4 + 0.6;
+        stardustBursts.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 0.4,
+          r: Math.random() * 2.2 + 0.9,
+          life: 1.0,
+          decay: Math.random() * 0.018 + 0.014,
+          isWarm: Math.random() > 0.3,
+        });
+      }
+    }
+
+    function animateSky() {
+      const w = skyCanvas.width;
+      const h = skyCanvas.height;
+      skyCtx.clearRect(0, 0, w, h);
+
+      // 1. 瞬く星
+      stars.forEach((s) => {
+        s.phase += s.speed;
+        const alpha = 0.2 + ((Math.sin(s.phase) + 1) / 2) * 0.7;
+        skyCtx.fillStyle = `rgba(255, 249, 235, ${alpha})`;
+        skyCtx.beginPath();
+        skyCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        skyCtx.fill();
+      });
+
+      // 2. 柔らかなイルミネーション・ボケ光
+      bokehOrbs.forEach((b) => {
+        b.x += b.vx;
+        b.y += b.vy;
+        b.phase += 0.012;
+        if (b.y < -b.r) {
+          b.y = h + b.r;
+          b.x = Math.random() * w;
+        }
+        const alpha = 0.06 + ((Math.sin(b.phase) + 1) / 2) * 0.1;
+        const grad = skyCtx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+        if (b.isGold) {
+          grad.addColorStop(0, `rgba(241, 214, 151, ${alpha})`);
+          grad.addColorStop(1, 'rgba(226, 188, 107, 0)');
+        } else {
+          grad.addColorStop(0, `rgba(255, 249, 235, ${alpha * 0.85})`);
+          grad.addColorStop(1, 'rgba(255, 249, 235, 0)');
+        }
+        skyCtx.fillStyle = grad;
+        skyCtx.beginPath();
+        skyCtx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        skyCtx.fill();
+      });
+
+      // 3. 流れ星
+      shootingStars = shootingStars.filter((st) => st.life > 0);
+      shootingStars.forEach((st) => {
+        st.x += st.vx;
+        st.y += st.vy;
+        st.life -= 0.022;
+
+        const tailX = st.x - st.vx * (st.len / 12);
+        const tailY = st.y - st.vy * (st.len / 12);
+        const grad = skyCtx.createLinearGradient(st.x, st.y, tailX, tailY);
+        grad.addColorStop(0, `rgba(255, 252, 240, ${st.life})`);
+        grad.addColorStop(0.4, `rgba(241, 214, 151, ${st.life * 0.65})`);
+        grad.addColorStop(1, 'rgba(226, 188, 107, 0)');
+
+        skyCtx.strokeStyle = grad;
+        skyCtx.lineWidth = 2;
+        skyCtx.lineCap = 'round';
+        skyCtx.beginPath();
+        skyCtx.moveTo(st.x, st.y);
+        skyCtx.lineTo(tailX, tailY);
+        skyCtx.stroke();
+      });
+
+      // 4. 穏やかな雪
+      snowflakes.forEach((f) => {
+        f.y += f.vy;
+        f.phase += 0.015;
+        f.x += Math.sin(f.phase) * f.swayAmp;
+
+        if (f.y > h + 6) {
+          f.y = -6;
+          f.x = Math.random() * w;
+        }
+        if (f.x > w + 6) f.x = -6;
+        if (f.x < -6) f.x = w + 6;
+
+        skyCtx.fillStyle = `rgba(253, 250, 244, ${f.opacity})`;
+        skyCtx.beginPath();
+        skyCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        skyCtx.fill();
+      });
+
+      // 5. タップ星屑パーティクル
+      stardustBursts = stardustBursts.filter((p) => p.life > 0);
+      stardustBursts.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.025;
+        p.vx *= 0.985;
+        p.life -= p.decay;
+
+        skyCtx.fillStyle = p.isWarm
+          ? `rgba(241, 214, 151, ${Math.max(p.life, 0)})`
+          : `rgba(255, 252, 244, ${Math.max(p.life, 0)})`;
+        skyCtx.beginPath();
+        skyCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        skyCtx.fill();
+      });
+
+      requestAnimationFrame(animateSky);
+    }
+
+    /**
+     * =========================================================
+     * 5. 常駐サンタさん(※彼氏) の表情＆吹き出し制御
+     * =========================================================
+     */
+    let writingResetTimer = null;
+    let blushResetTimer = null;
+
+    function setSantaSpeech(text) {
+      document.getElementById('santa-speech').textContent = text;
+    }
+
+    function handleSantaTap(e) {
+      const svg = document.getElementById('santa-svg');
+      svg.classList.toggle('beard-tilted');
+      svg.classList.add('blush-deep');
+
+      setSantaSpeech(SANTA_TAP_LINES[tapLineIdx]);
+      tapLineIdx = (tapLineIdx + 1) % SANTA_TAP_LINES.length;
+      playSparkleChime(true);
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      spawnStardust(rect.left + rect.width / 2, rect.top + rect.height / 2, 14);
+
+      clearTimeout(blushResetTimer);
+      blushResetTimer = setTimeout(() => {
+        svg.classList.remove('blush-deep');
+      }, 2400);
+    }
+
+    function onWishlistTyping(val) {
+      const svg = document.getElementById('santa-svg');
+      if (val.trim().length > 0) {
+        svg.classList.add('eyes-sparkle', 'is-writing');
+        svg.classList.remove('show-hearts');
+        setSantaSpeech('しっかり心に刻んでます…！(※スクショ並みの記憶力)');
+
+        clearTimeout(writingResetTimer);
+        writingResetTimer = setTimeout(() => {
+          svg.classList.remove('is-writing');
+        }, 1800);
+      } else {
+        svg.classList.remove('eyes-sparkle', 'is-writing');
+      }
+    }
+
+    function onMessageTyping(val) {
+      const svg = document.getElementById('santa-svg');
+      if (val.trim().length > 0) {
+        svg.classList.add('blush-deep', 'show-hearts');
+        svg.classList.remove('is-writing');
+        setSantaSpeech('そんなこと書かれたら照れるよ…');
+      } else {
+        svg.classList.remove('blush-deep', 'show-hearts');
+      }
+    }
+
+    /**
+     * =========================================================
+     * 6. ジャンル＆理想の過ごし方チップの描画
+     * =========================================================
+     */
+    function renderPills(containerId, options, stateSet) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      options.forEach((opt) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'wish-pill relative rounded-2xl p-3.5 text-left flex items-center gap-2.5 min-h-[56px]';
+        btn.setAttribute('aria-pressed', 'false');
+        btn.innerHTML = `
+          <span class="text-xl shrink-0 leading-none">${opt.emoji}</span>
+          <span class="text-xs sm:text-[13px] font-medium text-ivory/95 leading-snug pr-4">${opt.label}</span>
+          <span class="pill-check absolute top-2 right-2 w-4 h-4 rounded-full bg-champagne-300 text-midnight-950 text-[10px] font-bold flex items-center justify-center">✓</span>
+        `;
+
+        btn.addEventListener('click', (e) => {
+          const val = `${opt.emoji} ${opt.label}`;
+          if (stateSet.has(val)) {
+            stateSet.delete(val);
+            btn.classList.remove('selected');
+            btn.setAttribute('aria-pressed', 'false');
+          } else {
+            stateSet.add(val);
+            btn.classList.add('selected');
+            btn.setAttribute('aria-pressed', 'true');
+            setSantaSpeech(opt.speech);
+            playSparkleChime(false);
+            spawnStardust(e.clientX, e.clientY, 12);
+          }
+        });
+
+        container.appendChild(btn);
+      });
+    }
+
+    /**
+     * =========================================================
+     * 7. オープニング開封演出
+     * =========================================================
+     */
+    let isLetterOpened = false;
+    function openInvitation() {
+      if (isLetterOpened) return;
+      isLetterOpened = true;
+
+      const env = document.getElementById('opening-envelope');
+      const curtain = document.getElementById('opening-curtain');
+      const header = document.getElementById('santa-sticky-header');
+      const main = document.getElementById('main-content');
+
+      // リボンをほどいて光の星屑を舞わせる
+      env.classList.add('envelope-untied');
+      const rect = env.getBoundingClientRect();
+      spawnStardust(rect.left + rect.width / 2, rect.top + rect.height / 2, 42);
+
+      // タップをきっかけに優しいオルゴールをそっと開始（右上でいつでもOFF可能）
+      setBgmState(true, true);
+
+      setTimeout(() => {
+        curtain.classList.add('curtain-hidden');
+        header.classList.remove('hidden');
+        main.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 650);
+    }
+
+    /**
+     * =========================================================
+     * 8. Googleフォーム隠しiframe送信 ＆ 流れ星シネマティック演出
+     * =========================================================
+     */
+    let isSubmitting = false;
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      if (isSubmitting) return;
+
+      const categoryVal = Array.from(selectedCategories).join(' / ');
+      const itemVal = document.getElementById('input-item').value.trim();
+      const detailsVal = document.getElementById('input-details').value.trim();
+      const dateChips = Array.from(selectedDates).join(' / ');
+      const dateFree = document.getElementById('input-date-free').value.trim();
+      const dateVal = dateChips && dateFree
+        ? `${dateChips}（${dateFree}）`
+        : (dateChips || dateFree);
+      const messageVal = document.getElementById('input-message').value.trim();
+
+      // すべて未入力のときだけ優しく案内
+      if (!categoryVal && !itemVal && !detailsVal && !dateVal && !messageVal) {
+        showToast('どれか1つでも選んで教えてね ✨');
+        setSantaSpeech('あっ、まだ空欄かも？どれか1つでも教えてくれたら嬉しいな🎄');
+        return;
+      }
+
+      isSubmitting = true;
+
+      // 5つの隠しinputへ値を格納（ID厳密一致）
+      document.getElementById('hidden-category').value = categoryVal || '指定なし';
+      document.getElementById('hidden-item').value = itemVal || '特になし';
+      document.getElementById('hidden-details').value = detailsVal || '特になし';
+      document.getElementById('hidden-date').value = dateVal || '未選択';
+      document.getElementById('hidden-message').value = messageVal || 'なし';
+
+      // 隠しiframeへ向けてGoogleフォームへ確実にPOST送信
+      try {
+        document.getElementById('wishlist-form').submit();
+      } catch (err) {
+        console.error('フォーム送信エラー:', err);
+      }
+
+      // 魔法のアルペジオ＆シネマティック送信演出
+      playMagicalSwell();
+
+      const overlay = document.getElementById('sending-overlay');
+      const foldEl = document.getElementById('folding-letter-el');
+      const sealEl = document.getElementById('wax-seal-el');
+      const envWrap = document.getElementById('sending-envelope-wrap');
+      const streakEl = document.getElementById('star-streak-el');
+
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+
+      // アニメーション再起動
+      foldEl.classList.remove('anim-letter-fold');
+      sealEl.classList.remove('anim-wax-seal');
+      envWrap.classList.remove('anim-envelope-ascend');
+      streakEl.classList.add('hidden');
+      streakEl.classList.remove('anim-star-streak');
+      void envWrap.offsetWidth;
+
+      foldEl.classList.add('anim-letter-fold');
+      sealEl.classList.add('anim-wax-seal');
+      envWrap.classList.add('anim-envelope-ascend');
+      streakEl.classList.remove('hidden');
+      streakEl.classList.add('anim-star-streak');
+
+      // 流れ星も背景に1本流す
+      setTimeout(() => spawnShootingStar(), 1650);
+
+      // 控えバッジへ反映
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      document.getElementById('sent-timestamp').textContent =
+        `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      document.getElementById('summary-category').textContent = categoryVal || 'おまかせ';
+      document.getElementById('summary-item').textContent = itemVal || '（当日のお楽しみ）';
+      document.getElementById('summary-date').textContent = dateVal || '二人で相談しようね';
+
+      // 2.7秒後に完了画面を表示
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        document.getElementById('wishlist-form').classList.add('hidden');
+        document.getElementById('complete-section').classList.remove('hidden');
+
+        // 常駐サンタも温かな完了メッセージへ
+        const svg = document.getElementById('santa-svg');
+        svg.classList.remove('is-writing', 'beard-tilted');
+        svg.classList.add('blush-deep', 'show-hearts');
+        setSantaSpeech('大切に受け取ったよ。当日まで楽しみにしててね🎄✨');
+
+        spawnStardust(window.innerWidth / 2, window.innerHeight * 0.35, 45);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 2700);
+    }
+
+    /**
+     * =========================================================
+     * 9. 初期化（window.onload）
+     * =========================================================
+     */
+    window.onload = function () {
+      renderPills('category-grid', CATEGORY_OPTIONS, selectedCategories);
+      renderPills('date-grid', DATE_OPTIONS, selectedDates);
+
+      resizeSkyCanvas();
+      animateSky();
+
+      // たまに流れ星を流す
+      setInterval(() => {
+        if (Math.random() < 0.65) spawnShootingStar();
+      }, 5200);
+
+      window.addEventListener('resize', resizeSkyCanvas);
+
+      // 星空のどこかをタップすると星屑が舞う（入力欄以外の穏やかな演出）
+      document.addEventListener('pointerdown', (e) => {
+        const tag = e.target.tagName.toLowerCase();
+        if (tag !== 'input' && tag !== 'textarea') {
+          spawnStardust(e.clientX, e.clientY, 12);
+        }
+      });
+
+      // オープニング操作
+      document.getElementById('open-letter-btn').addEventListener('click', openInvitation);
+      document.getElementById('opening-envelope').addEventListener('click', openInvitation);
+      document.getElementById('opening-envelope').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openInvitation();
+        }
+      });
+
+      // オルゴールBGM切り替え
+      document.getElementById('bgm-toggle').addEventListener('click', () => {
+        setBgmState(!isBgmOn, false);
+      });
+
+      // サンタ(※彼氏)タップ＆入力リアクション
+      document.getElementById('santa-medallion-btn').addEventListener('click', handleSantaTap);
+      document.getElementById('input-item').addEventListener('input', (e) => onWishlistTyping(e.target.value));
+      document.getElementById('input-details').addEventListener('focus', () => {
+        setSantaSpeech('色とかサイズ、間違えないようにちゃんとメモしとくね✨');
+      });
+      document.getElementById('input-message').addEventListener('input', (e) => onMessageTyping(e.target.value));
+
+      // フォーム送信
+      document.getElementById('wishlist-form').addEventListener('submit', handleSubmit);
+    };
+  </script>
+</body>
+</html>
